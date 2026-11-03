@@ -1,0 +1,47 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: 8.9
+
+      - name: Verificar que el tag coincide con la versión de la app
+        run: |
+          TAG="${GITHUB_REF_NAME#v}"
+          V=$(grep -E '^val ver(Major|Minor|Patch)' app/build.gradle.kts | grep -oE '[0-9]+$' | paste -sd. -)
+          echo "tag=$TAG app=$V"
+          [ "$TAG" = "$V" ] || { echo "El tag no coincide con app/build.gradle.kts"; exit 1; }
+
+      - name: Restaurar keystore de firma
+        run: echo "${{ secrets.AETHER_KEYSTORE_BASE64 }}" | base64 -d > "$RUNNER_TEMP/aether.jks"
+
+      - name: Compilar APK firmado
+        env:
+          AETHER_KEYSTORE_PATH: ${{ runner.temp }}/aether.jks
+          AETHER_KEYSTORE_PASSWORD: ${{ secrets.AETHER_KEYSTORE_PASSWORD }}
+          AETHER_KEY_ALIAS: ${{ secrets.AETHER_KEY_ALIAS }}
+          AETHER_KEY_PASSWORD: ${{ secrets.AETHER_KEY_PASSWORD }}
+        run: gradle :app:assembleRelease -PgithubOwner=${{ github.repository_owner }}
+
+      - name: Renombrar APK
+        run: cp app/build/outputs/apk/release/app-release.apk "Aether-${GITHUB_REF_NAME}.apk"
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: Aether-${{ github.ref_name }}.apk
+          generate_release_notes: true
