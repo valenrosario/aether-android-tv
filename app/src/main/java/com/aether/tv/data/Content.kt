@@ -7,22 +7,33 @@ data class MediaItem(
     val title: String,
     val type: MediaType,
     val synopsis: String = "",
+    val genre: String = "",
+    val year: Int? = null,
     val posterUrl: String? = null,
     val backdropUrl: String? = null,
-    val year: Int? = null,
+    /** Colores de portada mientras no haya imagen (ARGB). */
+    val colorA: Long = 0xFF3B2F8F,
+    val colorB: Long = 0xFF0F1230,
+    /** 0..1 si el usuario ya empezó a verlo. */
+    val progress: Float? = null,
 )
 
 data class Rail(val title: String, val items: List<MediaItem>)
+
+data class HomeContent(
+    val featured: MediaItem?,
+    val top: List<MediaItem>,
+    val rails: List<Rail>,
+)
 
 /**
  * Contrato de contenido. La UI depende solo de esta interfaz: cuando exista el backend
  * se agrega una implementación remota sin tocar las pantallas.
  */
 interface ContentRepository {
-    suspend fun home(): List<Rail>
+    suspend fun home(): HomeContent
 }
 
-/** Implementación inicial sin backend: catálogo vacío. */
 class EmptyContentRepository : ContentRepository {
-    override suspend fun home(): List<Rail> = emptyList()
+    override suspend fun home() = HomeContent(null, emptyList(), emptyList())
 }

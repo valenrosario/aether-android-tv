@@ -1,53 +1,28 @@
 package com.aether.tv.ui
 
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
-import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.tv.material3.Text
 
-/** Contenedor enfocable con escala y borde suave al recibir foco del control remoto. */
-@Composable
-fun FocusBox(
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit = {},
-    content: @Composable () -> Unit,
-) {
-    var focused by remember { mutableStateOf(false) }
-    val scale by animateFloatAsState(if (focused) 1.06f else 1f, label = "focusScale")
-    val shape = RoundedCornerShape(14.dp)
-    Box(
-        modifier
-            .scale(scale)
-            .onFocusChanged { focused = it.isFocused }
-            .background(if (focused) AetherColors.SurfaceHigh else AetherColors.Surface, shape)
-            .border(
-                if (focused) BorderStroke(2.dp, AetherColors.Violet) else BorderStroke(1.dp, AetherColors.SurfaceHigh),
-                shape,
-            )
-            .clickable(onClick = onClick),
-        contentAlignment = Alignment.Center,
-    ) { content() }
-}
-
 @Composable
 fun AetherButton(label: String, modifier: Modifier = Modifier, onClick: () -> Unit) {
-    FocusBox(modifier, onClick) {
-        Text(label, color = AetherColors.Halo, fontSize = 18.sp, modifier = Modifier.padding(horizontal = 28.dp, vertical = 14.dp))
+    GlassFocus(
+        modifier,
+        shape = RoundedCornerShape(24.dp),
+        fillColor = Color.White.copy(alpha = 0.16f),
+        onClick = onClick,
+    ) {
+        Text(
+            label,
+            color = Color.White,
+            fontSize = 16.sp,
+            modifier = Modifier.align(Alignment.Center).padding(horizontal = 24.dp, vertical = 12.dp),
+        )
     }
 }

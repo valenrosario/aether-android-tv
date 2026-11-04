@@ -7,7 +7,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import com.aether.tv.data.EmptyContentRepository
+import com.aether.tv.data.SampleContentRepository
 import com.aether.tv.ui.AetherTheme
 import com.aether.tv.ui.HomeScreen
 import com.aether.tv.ui.SettingsScreen
@@ -16,7 +16,8 @@ import com.aether.tv.ui.SplashScreen
 private enum class Screen { SPLASH, HOME, SETTINGS }
 
 class MainActivity : ComponentActivity() {
-    private val repository = EmptyContentRepository()
+    // Cambiar por la implementación remota cuando exista el backend.
+    private val repository = SampleContentRepository()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
