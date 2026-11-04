@@ -26,12 +26,12 @@ private val scrim = Brush.verticalGradient(0.45f to Color.Transparent, 1f to Col
 
 @Composable
 fun PosterCard(item: MediaItem, onClick: () -> Unit) {
-    GlassFocus(Modifier.size(width = 107.dp, height = 148.dp), RoundedCornerShape(8.dp), onClick = onClick) {
+    GlassFocus(Modifier.size(width = 128.dp, height = 192.dp), RoundedCornerShape(8.dp), onClick = onClick) {
         Box(Modifier.fillMaxSize().posterArt(Color(item.colorA), Color(item.colorB)))
         Box(Modifier.fillMaxSize().background(scrim))
         Column(Modifier.align(Alignment.BottomStart).padding(8.dp)) {
-            Text(item.title, color = Color.White, fontSize = 11.sp, fontWeight = FontWeight.SemiBold, fontFamily = FontFamily.Serif, maxLines = 2)
-            Text(item.genre, color = Color.White.copy(alpha = 0.85f), fontSize = 8.sp, maxLines = 1)
+            Text(item.title, color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, fontFamily = FontFamily.Serif, maxLines = 2)
+            Text(item.genre, color = Color.White.copy(alpha = 0.85f), fontSize = 9.sp, maxLines = 1)
         }
     }
 }
@@ -39,12 +39,12 @@ fun PosterCard(item: MediaItem, onClick: () -> Unit) {
 /** Tarjeta horizontal con barra de progreso (continuar viendo). */
 @Composable
 fun LandscapeCard(item: MediaItem, onClick: () -> Unit) {
-    GlassFocus(Modifier.size(width = 176.dp, height = 99.dp), RoundedCornerShape(8.dp), onClick = onClick) {
+    GlassFocus(Modifier.size(width = 208.dp, height = 117.dp), RoundedCornerShape(8.dp), onClick = onClick) {
         Box(Modifier.fillMaxSize().posterArt(Color(item.colorA), Color(item.colorB)))
         Box(Modifier.fillMaxSize().background(scrim))
         Column(Modifier.align(Alignment.BottomStart).padding(start = 10.dp, end = 10.dp, bottom = 10.dp)) {
-            Text(item.title, color = Color.White, fontSize = 11.sp, fontWeight = FontWeight.SemiBold, fontFamily = FontFamily.Serif, maxLines = 1)
-            Text(item.genre, color = Color.White.copy(alpha = 0.85f), fontSize = 8.sp, maxLines = 1)
+            Text(item.title, color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, fontFamily = FontFamily.Serif, maxLines = 1)
+            Text(item.genre, color = Color.White.copy(alpha = 0.85f), fontSize = 9.sp, maxLines = 1)
         }
         val p = item.progress
         if (p != null) {

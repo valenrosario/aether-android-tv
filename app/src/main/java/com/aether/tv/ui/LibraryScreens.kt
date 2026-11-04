@@ -46,7 +46,7 @@ fun LibraryScreen(
 @Composable
 private fun PosterGrid(items: List<MediaItem>, onOpen: (MediaItem) -> Unit) {
     LazyVerticalGrid(
-        columns = GridCells.Adaptive(116.dp),
+        columns = GridCells.Adaptive(136.dp),
         contentPadding = PaddingValues(horizontal = 6.dp, vertical = 12.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalArrangement = Arrangement.spacedBy(14.dp),

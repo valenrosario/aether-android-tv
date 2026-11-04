@@ -1,7 +1,12 @@
 package com.aether.tv.ui
 
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
+import androidx.tv.material3.Border
+import androidx.tv.material3.ClickableSurfaceDefaults
+import androidx.tv.material3.ExperimentalTvMaterial3Api
+import androidx.tv.material3.Surface
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -69,7 +74,8 @@ fun AuroraBackground(modifier: Modifier = Modifier) {
     }
 }
 
-/** Elemento enfocable con el control remoto: escala y anillo al recibir foco. */
+/** Elemento enfocable con el control remoto (Surface nativa de TV): escala y aro al recibir foco, forma siempre redondeada. */
+@OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 fun GlassFocus(
     modifier: Modifier = Modifier,
@@ -79,16 +85,20 @@ fun GlassFocus(
     onClick: () -> Unit = {},
     content: @Composable BoxScope.() -> Unit,
 ) {
-    var focused by remember { mutableStateOf(false) }
-    val scale by animateFloatAsState(if (focused) 1.07f else 1f, label = "glassFocus")
-    Box(
-        modifier
-            .graphicsLayer { scaleX = scale; scaleY = scale }
-            .onFocusChanged { focused = it.isFocused }
-            .clip(shape)
-            .background(fillColor)
-            .then(if (focused) Modifier.border(3.dp, focusBorder, shape) else Modifier)
-            .clickable(onClick = onClick),
+    Surface(
+        onClick = onClick,
+        modifier = modifier,
+        shape = ClickableSurfaceDefaults.shape(shape = shape, focusedShape = shape, pressedShape = shape),
+        colors = ClickableSurfaceDefaults.colors(
+            containerColor = fillColor,
+            focusedContainerColor = fillColor,
+            pressedContainerColor = fillColor,
+            contentColor = Color.White,
+            focusedContentColor = Color.White,
+            pressedContentColor = Color.White,
+        ),
+        border = ClickableSurfaceDefaults.border(focusedBorder = Border(BorderStroke(3.dp, focusBorder), shape = shape)),
+        scale = ClickableSurfaceDefaults.scale(focusedScale = 1.06f),
         content = content,
     )
 }
