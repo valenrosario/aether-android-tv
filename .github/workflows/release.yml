@@ -1,8 +1,17 @@
 name: Release
 
+# Automático: cada vez que se sube a main una versión nueva (app/build.gradle.kts),
+# compila, firma y publica el release vX.Y.Z con el APK. Si ese release ya existe, no hace nada.
 on:
   push:
-    tags: ['v*']
+    branches: [main]
+    paths:
+      - 'app/**'
+      - 'build.gradle.kts'
+      - 'settings.gradle.kts'
+      - 'gradle.properties'
+      - '.github/workflows/release.yml'
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -12,25 +21,38 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Leer versión de la app
+        id: ver
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          V=$(grep -E '^val ver(Major|Minor|Patch)' app/build.gradle.kts | grep -oE '[0-9]+$' | paste -sd. -)
+          echo "version=$V" >> "$GITHUB_OUTPUT"
+          if gh release view "v$V" >/dev/null 2>&1; then
+            echo "El release v$V ya existe: no hay nada para publicar."
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - uses: actions/setup-java@v4
+        if: steps.ver.outputs.exists != 'true'
         with:
           distribution: temurin
           java-version: 17
+
       - uses: gradle/actions/setup-gradle@v4
+        if: steps.ver.outputs.exists != 'true'
         with:
           gradle-version: 8.9
 
-      - name: Verificar que el tag coincide con la versión de la app
-        run: |
-          TAG="${GITHUB_REF_NAME#v}"
-          V=$(grep -E '^val ver(Major|Minor|Patch)' app/build.gradle.kts | grep -oE '[0-9]+$' | paste -sd. -)
-          echo "tag=$TAG app=$V"
-          [ "$TAG" = "$V" ] || { echo "El tag no coincide con app/build.gradle.kts"; exit 1; }
-
       - name: Restaurar keystore de firma
+        if: steps.ver.outputs.exists != 'true'
         run: echo "${{ secrets.AETHER_KEYSTORE_BASE64 }}" | base64 -d > "$RUNNER_TEMP/aether.jks"
 
       - name: Compilar APK firmado
+        if: steps.ver.outputs.exists != 'true'
         env:
           AETHER_KEYSTORE_PATH: ${{ runner.temp }}/aether.jks
           AETHER_KEYSTORE_PASSWORD: ${{ secrets.AETHER_KEYSTORE_PASSWORD }}
@@ -39,9 +61,15 @@ jobs:
         run: gradle :app:assembleRelease -PgithubOwner=${{ github.repository_owner }}
 
       - name: Renombrar APK
-        run: cp app/build/outputs/apk/release/app-release.apk "Aether-${GITHUB_REF_NAME}.apk"
+        if: steps.ver.outputs.exists != 'true'
+        run: cp app/build/outputs/apk/release/app-release.apk "Aether-v${{ steps.ver.outputs.version }}.apk"
 
-      - uses: softprops/action-gh-release@v2
+      - name: Publicar release
+        if: steps.ver.outputs.exists != 'true'
+        uses: softprops/action-gh-release@v2
         with:
-          files: Aether-${{ github.ref_name }}.apk
+          tag_name: v${{ steps.ver.outputs.version }}
+          target_commitish: ${{ github.sha }}
+          name: Aether ${{ steps.ver.outputs.version }}
+          files: Aether-v${{ steps.ver.outputs.version }}.apk
           generate_release_notes: true
