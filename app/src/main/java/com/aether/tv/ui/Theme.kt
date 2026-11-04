@@ -13,6 +13,11 @@ object AetherColors {
     val Violet = Color(0xFF8B7CFF)
     val Halo = Color(0xFFE9E6FF)
     val Muted = Color(0xFF8A8FA3)
+
+    /** Paleta clara (liquid glass pastel). */
+    val Ink = Color(0xFF1E1740)
+    val InkSoft = Color(0xFF5B5480)
+    val Accent = Color(0xFF7C5CFF)
 }
 
 @OptIn(ExperimentalTvMaterial3Api::class)
@@ -20,8 +25,8 @@ object AetherColors {
 fun AetherTheme(content: @Composable () -> Unit) {
     MaterialTheme(
         colorScheme = darkColorScheme(
-            primary = AetherColors.Violet,
-            onPrimary = AetherColors.Black,
+            primary = AetherColors.Accent,
+            onPrimary = Color.White,
             background = AetherColors.Black,
             onBackground = AetherColors.Halo,
             surface = AetherColors.Surface,

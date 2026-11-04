@@ -8,7 +8,7 @@ plugins {
 
 // Versión única fuente de verdad. versionCode = MAJOR*10000 + MINOR*100 + PATCH
 val verMajor = 1
-val verMinor = 1
+val verMinor = 2
 val verPatch = 0
 
 val keystoreProps = Properties().apply {
@@ -82,6 +82,8 @@ dependencies {
     implementation("androidx.tv:tv-foundation:1.0.0-alpha11")
     implementation("androidx.tv:tv-material:1.0.0")
     implementation("androidx.navigation:navigation-compose:2.8.3")
+    implementation("androidx.media3:media3-exoplayer:1.4.1")
+    implementation("androidx.media3:media3-ui:1.4.1")
     implementation("androidx.datastore:datastore-preferences:1.1.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")

@@ -8,6 +8,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -18,56 +19,74 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.layout.size
 
 /**
- * Vidrio liviano para TV: relleno translúcido con degradé + borde con brillo.
- * No usa desenfoque real (caro para la GPU de muchos TVs); el efecto viene del fondo aurora.
+ * Vidrio claro y liviano: relleno blanco translúcido con degradé + borde con brillo.
+ * Sin desenfoque real (caro para la GPU de muchos TVs); el efecto viene del fondo aurora.
  */
-fun Modifier.glass(shape: Shape, fill: Float = 0.16f): Modifier = this
+fun Modifier.glass(shape: Shape, fill: Float = 0.55f): Modifier = this
     .clip(shape)
-    .background(Brush.linearGradient(listOf(Color.White.copy(alpha = fill), Color.White.copy(alpha = 0.04f))))
+    .background(
+        Brush.linearGradient(
+            listOf(
+                Color.White.copy(alpha = (fill + 0.2f).coerceAtMost(1f)),
+                Color.White.copy(alpha = (fill - 0.2f).coerceAtLeast(0f)),
+            ),
+        ),
+    )
     .border(
         1.dp,
-        Brush.linearGradient(listOf(Color.White.copy(alpha = 0.55f), Color.White.copy(alpha = 0.08f), Color.White.copy(alpha = 0.25f))),
+        Brush.linearGradient(listOf(Color.White.copy(alpha = 0.95f), Color.White.copy(alpha = 0.35f))),
         shape,
     )
 
-/** Fondo aurora: manchas de color suaves sobre negro. */
+/** Fondo aurora pastel. */
 @Composable
 fun AuroraBackground(modifier: Modifier = Modifier) {
-    Canvas(modifier.fillMaxSize().background(AetherColors.Black)) {
+    Canvas(modifier.fillMaxSize()) {
+        drawRect(
+            Brush.linearGradient(
+                listOf(Color(0xFFEDE7FF), Color(0xFFF8DDF1), Color(0xFFD9E6FF)),
+                start = Offset(0f, 0f),
+                end = Offset(size.width, size.height),
+            ),
+        )
         fun blob(color: Color, cx: Float, cy: Float, r: Float, a: Float) {
             val c = Offset(size.width * cx, size.height * cy)
             val rad = size.width * r
-            drawCircle(Brush.radialGradient(listOf(color.copy(alpha = a), Color.Transparent), center = c, radius = rad), radius = rad, center = c)
+            drawCircle(
+                Brush.radialGradient(listOf(color.copy(alpha = a), Color.Transparent), center = c, radius = rad),
+                radius = rad,
+                center = c,
+            )
         }
-        blob(Color(0xFF7C5CFF), 0.05f, 0.05f, 0.38f, 0.85f)
-        blob(Color(0xFF18C6E8), 0.98f, 0.30f, 0.30f, 0.50f)
-        blob(Color(0xFFFF4FB8), 0.45f, 0.98f, 0.30f, 0.45f)
-        blob(Color(0xFFFFB347), 0.85f, 1.00f, 0.24f, 0.35f)
-        blob(Color(0xFF2B4BFF), 0.00f, 1.00f, 0.30f, 0.55f)
+        blob(Color(0xFF9D86FF), 0.10f, 0.10f, 0.35f, 0.45f)
+        blob(Color(0xFFFFB3E1), 0.92f, 0.20f, 0.30f, 0.65f)
+        blob(Color(0xFF9FD8FF), 0.62f, 1.00f, 0.35f, 0.55f)
     }
 }
 
-/** Elemento enfocable con el control remoto: escala y borde brillante al recibir foco. */
+/** Elemento enfocable con el control remoto: escala y anillo al recibir foco. */
 @Composable
 fun GlassFocus(
     modifier: Modifier = Modifier,
     shape: Shape = RoundedCornerShape(16.dp),
     fillColor: Color = Color.Transparent,
-    focusBorder: Color = Color.White,
+    focusBorder: Color = AetherColors.Accent,
     onClick: () -> Unit = {},
     content: @Composable BoxScope.() -> Unit,
 ) {
@@ -98,7 +117,7 @@ fun Modifier.posterArt(a: Color, b: Color): Modifier = this
         )
     }
 
-/** Escena del banner: cielo, luna y montañas. */
+/** Escena: cielo, luna y montañas. */
 @Composable
 fun SceneArt(a: Color, b: Color, modifier: Modifier = Modifier) {
     Canvas(modifier) {
@@ -140,10 +159,11 @@ private fun DrawScope.ridge(points: List<Pair<Float, Float>>, color: Color) {
 @Composable
 fun PlayIcon(color: Color, size: Dp) {
     Canvas(Modifier.size(size)) {
+        val w = this.size.width
         val p = Path().apply {
-            moveTo(this@Canvas.size.width * 0.2f, this@Canvas.size.height * 0.1f)
-            lineTo(this@Canvas.size.width * 0.9f, this@Canvas.size.height * 0.5f)
-            lineTo(this@Canvas.size.width * 0.2f, this@Canvas.size.height * 0.9f)
+            moveTo(w * 0.22f, w * 0.10f)
+            lineTo(w * 0.92f, w * 0.50f)
+            lineTo(w * 0.22f, w * 0.90f)
             close()
         }
         drawPath(p, color)
@@ -154,9 +174,8 @@ fun PlayIcon(color: Color, size: Dp) {
 fun SearchIcon(color: Color, size: Dp) {
     Canvas(Modifier.size(size)) {
         val w = this.size.width
-        val s = Stroke(width = w * 0.11f, cap = StrokeCap.Round)
-        drawCircle(color, radius = w * 0.30f, center = Offset(w * 0.44f, w * 0.44f), style = s)
-        drawLine(color, Offset(w * 0.66f, w * 0.66f), Offset(w * 0.90f, w * 0.90f), strokeWidth = w * 0.11f, cap = StrokeCap.Round)
+        drawCircle(color, radius = w * 0.30f, center = Offset(w * 0.44f, w * 0.44f), style = Stroke(width = w * 0.10f))
+        drawLine(color, Offset(w * 0.66f, w * 0.66f), Offset(w * 0.90f, w * 0.90f), strokeWidth = w * 0.10f, cap = StrokeCap.Round)
     }
 }
 
@@ -177,6 +196,53 @@ fun GearIcon(color: Color, size: Dp) {
                 strokeWidth = w * 0.09f,
                 cap = StrokeCap.Round,
             )
+        }
+    }
+}
+
+enum class NavKind { HOME, SEARCH, FILM, TV, LIST, GEAR }
+
+@Composable
+fun NavIcon(kind: NavKind, color: Color, size: Dp) {
+    when (kind) {
+        NavKind.SEARCH -> SearchIcon(color, size)
+        NavKind.GEAR -> GearIcon(color, size)
+        else -> Canvas(Modifier.size(size)) {
+            val w = this.size.width
+            val sw = w * 0.09f
+            val st = Stroke(width = sw, cap = StrokeCap.Round, join = StrokeJoin.Round)
+            when (kind) {
+                NavKind.HOME -> {
+                    val p = Path().apply {
+                        moveTo(w * 0.12f, w * 0.50f)
+                        lineTo(w * 0.50f, w * 0.16f)
+                        lineTo(w * 0.88f, w * 0.50f)
+                        moveTo(w * 0.24f, w * 0.44f)
+                        lineTo(w * 0.24f, w * 0.84f)
+                        lineTo(w * 0.76f, w * 0.84f)
+                        lineTo(w * 0.76f, w * 0.44f)
+                    }
+                    drawPath(p, color, style = st)
+                }
+                NavKind.FILM -> {
+                    drawRoundRect(color, Offset(w * 0.14f, w * 0.20f), Size(w * 0.72f, w * 0.60f), CornerRadius(w * 0.08f), style = st)
+                    drawLine(color, Offset(w * 0.36f, w * 0.20f), Offset(w * 0.36f, w * 0.80f), strokeWidth = sw)
+                    drawLine(color, Offset(w * 0.64f, w * 0.20f), Offset(w * 0.64f, w * 0.80f), strokeWidth = sw)
+                }
+                NavKind.TV -> {
+                    drawRoundRect(color, Offset(w * 0.12f, w * 0.20f), Size(w * 0.76f, w * 0.50f), CornerRadius(w * 0.08f), style = st)
+                    drawLine(color, Offset(w * 0.50f, w * 0.70f), Offset(w * 0.50f, w * 0.84f), strokeWidth = sw, cap = StrokeCap.Round)
+                    drawLine(color, Offset(w * 0.32f, w * 0.84f), Offset(w * 0.68f, w * 0.84f), strokeWidth = sw, cap = StrokeCap.Round)
+                }
+                NavKind.LIST -> {
+                    for (i in 0 until 3) {
+                        val y = w * (0.30f + i * 0.20f)
+                        drawCircle(color, radius = sw * 0.6f, center = Offset(w * 0.18f, y))
+                        drawLine(color, Offset(w * 0.36f, y), Offset(w * 0.86f, y), strokeWidth = sw, cap = StrokeCap.Round)
+                    }
+                }
+                else -> Unit
+            }
         }
     }
 }

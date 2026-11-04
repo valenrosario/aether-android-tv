@@ -11,6 +11,7 @@ data class MediaItem(
     val year: Int? = null,
     val posterUrl: String? = null,
     val backdropUrl: String? = null,
+    val videoUrl: String? = null,
     /** Colores de portada mientras no haya imagen (ARGB). */
     val colorA: Long = 0xFF3B2F8F,
     val colorB: Long = 0xFF0F1230,
@@ -18,12 +19,14 @@ data class MediaItem(
     val progress: Float? = null,
 )
 
-data class Rail(val title: String, val items: List<MediaItem>)
+data class Rail(val title: String, val items: List<MediaItem>, val wide: Boolean = false)
 
 data class HomeContent(
-    val featured: MediaItem?,
-    val top: List<MediaItem>,
+    /** Títulos del carrusel destacado. */
+    val featured: List<MediaItem>,
     val rails: List<Rail>,
+    /** Catálogo completo, sin repetidos. */
+    val library: List<MediaItem>,
 )
 
 /**
@@ -35,5 +38,5 @@ interface ContentRepository {
 }
 
 class EmptyContentRepository : ContentRepository {
-    override suspend fun home() = HomeContent(null, emptyList(), emptyList())
+    override suspend fun home() = HomeContent(emptyList(), emptyList(), emptyList())
 }

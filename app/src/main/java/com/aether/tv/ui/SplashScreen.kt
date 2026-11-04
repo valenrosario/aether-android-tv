@@ -3,8 +3,8 @@ package com.aether.tv.ui
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -28,19 +28,22 @@ fun SplashScreen(onFinished: () -> Unit) {
         kotlinx.coroutines.delay(500)
         onFinished()
     }
-    Column(
-        Modifier.fillMaxSize().background(AetherColors.Black),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        AetherMark(120.dp, progress = draw.value)
-        Text(
-            "AETHER",
-            color = AetherColors.Halo,
-            fontSize = 34.sp,
-            fontWeight = FontWeight.Light,
-            letterSpacing = 10.sp,
-            modifier = Modifier.alpha(text.value),
-        )
+    Box(Modifier.fillMaxSize()) {
+        AuroraBackground()
+        Column(
+            Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            AetherMark(100.dp, progress = draw.value, color = AetherColors.Ink)
+            Text(
+                "AETHER",
+                color = AetherColors.Ink,
+                fontSize = 28.sp,
+                fontWeight = FontWeight.Light,
+                letterSpacing = 8.sp,
+                modifier = Modifier.alpha(text.value),
+            )
+        }
     }
 }

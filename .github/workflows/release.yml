@@ -15,6 +15,7 @@ on:
 
 permissions:
   contents: write
+  issues: write
 
 jobs:
   release:
@@ -58,7 +59,17 @@ jobs:
           AETHER_KEYSTORE_PASSWORD: ${{ secrets.AETHER_KEYSTORE_PASSWORD }}
           AETHER_KEY_ALIAS: ${{ secrets.AETHER_KEY_ALIAS }}
           AETHER_KEY_PASSWORD: ${{ secrets.AETHER_KEY_PASSWORD }}
-        run: gradle :app:assembleRelease -PgithubOwner=${{ github.repository_owner }}
+        run: |
+          set -o pipefail
+          gradle :app:assembleRelease -PgithubOwner=${{ github.repository_owner }} 2>&1 | tee build.log
+
+      - name: Reportar error de compilación
+        if: failure() && steps.ver.outputs.exists != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          { echo '```'; grep -E '^e: |What went wrong|Execution failed|error:' -A3 build.log | head -80; echo '```'; } > body.md
+          gh issue create --title "Falló la compilación de v${{ steps.ver.outputs.version }}" --body-file body.md
 
       - name: Renombrar APK
         if: steps.ver.outputs.exists != 'true'
