@@ -8,7 +8,7 @@ plugins {
 
 // Versión única fuente de verdad. versionCode = MAJOR*10000 + MINOR*100 + PATCH
 val verMajor = 1
-val verMinor = 2
+val verMinor = 3
 val verPatch = 0
 
 val keystoreProps = Properties().apply {

@@ -5,6 +5,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.background
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -46,25 +50,25 @@ fun Shell(
 
     Box(Modifier.fillMaxSize()) {
         AuroraBackground()
-        Row(
-            Modifier.fillMaxSize().padding(16.dp),
-            horizontalArrangement = Arrangement.spacedBy(14.dp),
-        ) {
-            Rail(tab, onTab, Modifier.width(72.dp).fillMaxHeight())
-            Box(Modifier.weight(1f).fillMaxHeight()) {
+        Column(Modifier.fillMaxSize()) {
+            TopBar(tab, onTab)
+            Box(Modifier.weight(1f).fillMaxWidth()) {
                 if (content != null) {
+                    val pad = Modifier.fillMaxSize().padding(horizontal = 32.dp)
                     when (tab) {
                         Tab.INICIO -> HomeScreen(content, myList, onOpen, onPlay)
-                        Tab.BUSCAR -> SearchScreen(content.library, onOpen)
-                        Tab.PELICULAS -> LibraryScreen("Películas", content.library.filter { it.type == MediaType.MOVIE }, onOpen)
-                        Tab.SERIES -> LibraryScreen("Series", content.library.filter { it.type == MediaType.SERIES }, onOpen)
-                        Tab.LISTA -> LibraryScreen(
-                            "Mi lista",
-                            content.library.filter { it.id in myList.ids },
-                            onOpen,
-                            emptyMessage = "Todavía no agregaste nada. Usá “+ Mi lista” en cualquier título.",
-                        )
-                        Tab.AJUSTES -> SettingsContent()
+                        Tab.BUSCAR -> Box(pad) { SearchScreen(content.library, onOpen) }
+                        Tab.PELICULAS -> Box(pad) { LibraryScreen("Películas", content.library.filter { it.type == MediaType.MOVIE }, onOpen) }
+                        Tab.SERIES -> Box(pad) { LibraryScreen("Series", content.library.filter { it.type == MediaType.SERIES }, onOpen) }
+                        Tab.LISTA -> Box(pad) {
+                            LibraryScreen(
+                                "Mi lista",
+                                content.library.filter { it.id in myList.ids },
+                                onOpen,
+                                emptyMessage = "Todavía no agregaste nada. Usá “+ Mi lista” en cualquier título.",
+                            )
+                        }
+                        Tab.AJUSTES -> Box(pad) { SettingsContent() }
                     }
                 }
             }
@@ -72,34 +76,37 @@ fun Shell(
     }
 }
 
+/** Barra superior: logo a la izquierda y secciones como texto con subrayado en la activa. */
 @Composable
-private fun Rail(tab: Tab, onTab: (Tab) -> Unit, modifier: Modifier) {
-    Column(
-        modifier.glass(RoundedCornerShape(36.dp)).padding(vertical = 14.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceBetween,
+private fun TopBar(tab: Tab, onTab: (Tab) -> Unit) {
+    Row(
+        Modifier.fillMaxWidth().height(46.dp).padding(horizontal = 26.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
     ) {
-        AetherMark(28.dp, color = AetherColors.Ink)
-        Column(verticalArrangement = Arrangement.spacedBy(6.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-            Tab.values().filter { it != Tab.AJUSTES }.forEach { RailItem(it, it == tab, onTab) }
-        }
-        RailItem(Tab.AJUSTES, tab == Tab.AJUSTES, onTab)
-    }
-}
-
-@Composable
-private fun RailItem(t: Tab, selected: Boolean, onTab: (Tab) -> Unit) {
-    val fg = if (selected) Color.White else AetherColors.InkSoft
-    GlassFocus(
-        Modifier.width(56.dp).height(50.dp),
-        shape = RoundedCornerShape(18.dp),
-        fillColor = if (selected) AetherColors.Accent else Color.Transparent,
-        focusBorder = AetherColors.Ink,
-        onClick = { onTab(t) },
-    ) {
-        Column(Modifier.align(Alignment.Center), horizontalAlignment = Alignment.CenterHorizontally) {
-            NavIcon(t.icon, fg, 20.dp)
-            Text(t.label, color = fg, fontSize = 8.sp, maxLines = 1)
+        AetherWordmark(markSize = 20.dp, textSize = 15)
+        Spacer(Modifier.width(18.dp))
+        Tab.values().forEach { t ->
+            val sel = t == tab
+            GlassFocus(
+                Modifier.height(30.dp),
+                shape = RoundedCornerShape(15.dp),
+                onClick = { onTab(t) },
+            ) {
+                Column(Modifier.align(Alignment.Center).padding(horizontal = 12.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(
+                        t.label,
+                        color = if (sel) Color.White else AetherColors.InkSoft,
+                        fontSize = 11.sp,
+                        fontWeight = if (sel) FontWeight.Bold else FontWeight.Medium,
+                        maxLines = 1,
+                    )
+                    Box(
+                        Modifier.padding(top = 2.dp).size(width = 16.dp, height = 2.dp)
+                            .background(if (sel) AetherColors.Accent else Color.Transparent),
+                    )
+                }
+            }
         }
     }
 }

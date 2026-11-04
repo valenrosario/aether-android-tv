@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -47,31 +48,27 @@ fun HomeScreen(
     LazyColumn(
         Modifier.fillMaxSize(),
         contentPadding = PaddingValues(bottom = 24.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+        verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
         item {
-            Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-                HeroCarousel(
-                    items = content.featured,
-                    index = heroIndex,
-                    onIndex = { heroIndex = it },
-                    inList = { myList.contains(it.id) },
-                    onPlay = onPlay,
-                    onInfo = onOpen,
-                    onToggleList = { myList.toggle(it.id) },
-                    playFocus = playFocus,
-                    modifier = Modifier.fillMaxWidth().height(224.dp),
-                )
-                Spacer(Modifier.height(10.dp))
-                HeroDots(content.featured.size, heroIndex)
-            }
+            Billboard(
+                items = content.featured,
+                index = heroIndex,
+                onIndex = { heroIndex = it },
+                inList = { myList.contains(it.id) },
+                onPlay = onPlay,
+                onInfo = onOpen,
+                onToggleList = { myList.toggle(it.id) },
+                playFocus = playFocus,
+                modifier = Modifier.fillMaxWidth().height(270.dp),
+            )
         }
         items(content.rails) { rail ->
             Column {
-                Text(rail.title, color = AetherColors.Ink, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+                Text(rail.title, color = AetherColors.Ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(start = 32.dp))
                 LazyRow(
                     horizontalArrangement = Arrangement.spacedBy(13.dp),
-                    contentPadding = PaddingValues(horizontal = 6.dp, vertical = 10.dp),
+                    contentPadding = PaddingValues(horizontal = 32.dp, vertical = 10.dp),
                 ) {
                     items(rail.items) { m ->
                         if (rail.wide) LandscapeCard(m) { onOpen(m) } else PosterCard(m) { onOpen(m) }

@@ -43,40 +43,29 @@ fun Modifier.glass(shape: Shape, fill: Float = 0.55f): Modifier = this
     .background(
         Brush.linearGradient(
             listOf(
-                Color.White.copy(alpha = (fill + 0.2f).coerceAtMost(1f)),
-                Color.White.copy(alpha = (fill - 0.2f).coerceAtLeast(0f)),
+                Color.White.copy(alpha = fill * 0.22f),
+                Color.White.copy(alpha = fill * 0.08f),
             ),
         ),
     )
     .border(
         1.dp,
-        Brush.linearGradient(listOf(Color.White.copy(alpha = 0.95f), Color.White.copy(alpha = 0.35f))),
+        Brush.linearGradient(listOf(Color.White.copy(alpha = 0.35f), Color.White.copy(alpha = 0.08f))),
         shape,
     )
 
-/** Fondo aurora pastel. */
+/** Fondo oscuro cinematográfico con un resplandor violeta muy suave. */
 @Composable
 fun AuroraBackground(modifier: Modifier = Modifier) {
     Canvas(modifier.fillMaxSize()) {
-        drawRect(
-            Brush.linearGradient(
-                listOf(Color(0xFFEDE7FF), Color(0xFFF8DDF1), Color(0xFFD9E6FF)),
-                start = Offset(0f, 0f),
-                end = Offset(size.width, size.height),
-            ),
+        drawRect(AetherColors.Black)
+        val c = Offset(size.width * 0.85f, 0f)
+        val rad = size.width * 0.55f
+        drawCircle(
+            Brush.radialGradient(listOf(Color(0xFF5B45D6).copy(alpha = 0.28f), Color.Transparent), center = c, radius = rad),
+            radius = rad,
+            center = c,
         )
-        fun blob(color: Color, cx: Float, cy: Float, r: Float, a: Float) {
-            val c = Offset(size.width * cx, size.height * cy)
-            val rad = size.width * r
-            drawCircle(
-                Brush.radialGradient(listOf(color.copy(alpha = a), Color.Transparent), center = c, radius = rad),
-                radius = rad,
-                center = c,
-            )
-        }
-        blob(Color(0xFF9D86FF), 0.10f, 0.10f, 0.35f, 0.45f)
-        blob(Color(0xFFFFB3E1), 0.92f, 0.20f, 0.30f, 0.65f)
-        blob(Color(0xFF9FD8FF), 0.62f, 1.00f, 0.35f, 0.55f)
     }
 }
 
@@ -86,7 +75,7 @@ fun GlassFocus(
     modifier: Modifier = Modifier,
     shape: Shape = RoundedCornerShape(16.dp),
     fillColor: Color = Color.Transparent,
-    focusBorder: Color = AetherColors.Accent,
+    focusBorder: Color = Color.White,
     onClick: () -> Unit = {},
     content: @Composable BoxScope.() -> Unit,
 ) {

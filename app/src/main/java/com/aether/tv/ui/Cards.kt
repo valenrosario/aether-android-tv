@@ -26,7 +26,7 @@ private val scrim = Brush.verticalGradient(0.45f to Color.Transparent, 1f to Col
 
 @Composable
 fun PosterCard(item: MediaItem, onClick: () -> Unit) {
-    GlassFocus(Modifier.size(width = 107.dp, height = 148.dp), RoundedCornerShape(16.dp), onClick = onClick) {
+    GlassFocus(Modifier.size(width = 107.dp, height = 148.dp), RoundedCornerShape(8.dp), onClick = onClick) {
         Box(Modifier.fillMaxSize().posterArt(Color(item.colorA), Color(item.colorB)))
         Box(Modifier.fillMaxSize().background(scrim))
         Column(Modifier.align(Alignment.BottomStart).padding(8.dp)) {
@@ -39,7 +39,7 @@ fun PosterCard(item: MediaItem, onClick: () -> Unit) {
 /** Tarjeta horizontal con barra de progreso (continuar viendo). */
 @Composable
 fun LandscapeCard(item: MediaItem, onClick: () -> Unit) {
-    GlassFocus(Modifier.size(width = 176.dp, height = 99.dp), RoundedCornerShape(16.dp), onClick = onClick) {
+    GlassFocus(Modifier.size(width = 176.dp, height = 99.dp), RoundedCornerShape(8.dp), onClick = onClick) {
         Box(Modifier.fillMaxSize().posterArt(Color(item.colorA), Color(item.colorB)))
         Box(Modifier.fillMaxSize().background(scrim))
         Column(Modifier.align(Alignment.BottomStart).padding(start = 10.dp, end = 10.dp, bottom = 10.dp)) {

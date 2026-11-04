@@ -7,7 +7,7 @@ import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.darkColorScheme
 
 object AetherColors {
-    val Black = Color(0xFF07080C)
+    val Black = Color(0xFF0A0A0D)
     val Surface = Color(0xFF10121A)
     val SurfaceHigh = Color(0xFF191C28)
     val Violet = Color(0xFF8B7CFF)
@@ -15,8 +15,8 @@ object AetherColors {
     val Muted = Color(0xFF8A8FA3)
 
     /** Paleta clara (liquid glass pastel). */
-    val Ink = Color(0xFF1E1740)
-    val InkSoft = Color(0xFF5B5480)
+    val Ink = Color(0xFFF4F4F8)
+    val InkSoft = Color(0xFF9EA2B5)
     val Accent = Color(0xFF7C5CFF)
 }
 
